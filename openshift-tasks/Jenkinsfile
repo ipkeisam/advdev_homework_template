@@ -24,8 +24,8 @@ pipeline {
     stage('Checkout Source') {
       steps {
         // TBD: Get code from protected Git repository
-        git branch: 'master', url: 'https://github.com/ipkeisam/advdev_homework_template'
-       //checkout scm
+       // git branch: 'master', url: 'https://github.com/ipkeisam/advdev_homework_template'
+       checkout scm
        script {
           def pom = readMavenPom file: 'pom.xml'
           def version = pom.version
