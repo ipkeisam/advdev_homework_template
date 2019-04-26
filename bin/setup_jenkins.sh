@@ -14,12 +14,26 @@ echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cl
 
 # Set up Jenkins with sufficient resources
 # TBD
+oc new-project ${GUID}-jenkins-svr --display-name "Shared Jenkins"
+oc new-app jenkins-persistent --param ENABLE_OAUTH=true --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi --param DISABLE_ADMINISTRATIVE_MONITORS=true
 
 # Create custom agent container image with skopeo
 # TBD
+oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
+      USER root\nRUN yum -y install skopeo && yum clean all\n
+      USER 1001' --name=jenkins-agent-appdev -n ${GUID}-jenkins
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
 # TBD
+oc new-app --template=eap71-basic-s2i --param APPLICATION_NAME=tasks --param SOURCE_REPOSITORY_URL=http://gogs.xyz-gogs.svc.cluster.local:3000/CICDLabs/openshift-tasks-private.git --param SOURCE_REPOSITORY_REF=master --param CONTEXT_DIR=/ --param MAVEN_MIRROR_URL=https://nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/maven-all-public
+
+oc create secret generic gogs-secret --from-literal=username=gogs--from-literal=password=gogs
+
+oc set build-secret --source bc/tasks gogs-secret
+
+oc start-build tasks
+
+
 
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
