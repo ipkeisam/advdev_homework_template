@@ -25,7 +25,13 @@ oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
 # TBD
+
+oc new-project ${GUID}-builds
+
+
 oc new-app --template=eap71-basic-s2i --param APPLICATION_NAME=tasks --param SOURCE_REPOSITORY_URL=https://github.com/ipkeisam/advdev_homework_template.git --param SOURCE_REPOSITORY_REF=master --param CONTEXT_DIR=/ --param MAVEN_MIRROR_URL=https://nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/maven-all-public
+
+oc describe pod tasks-1-build
 
 oc create secret generic gogs-secret --from-literal=username=gogs--from-literal=password=gogs
 
@@ -33,7 +39,13 @@ oc set build-secret --source bc/tasks gogs-secret
 
 oc start-build tasks
 
+oc patch bc/tasks --patch='{"spec": {"strategy": {"sourceStrategy": {"incremental": true}}}}'
+oc patch bc/tasks --patch='{"spec": {"strategy": {"sourceStrategy": {"forcePull": false}}}}'
 
+oc start-build tasks
+oc logs -f tasks-3-build
+
+oc describe is builder
 
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
