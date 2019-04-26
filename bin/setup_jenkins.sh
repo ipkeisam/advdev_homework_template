@@ -25,7 +25,7 @@ oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
 # TBD
-oc new-app --template=eap71-basic-s2i --param APPLICATION_NAME=tasks --param SOURCE_REPOSITORY_URL=http://gogs.xyz-gogs.svc.cluster.local:3000/CICDLabs/openshift-tasks-private.git --param SOURCE_REPOSITORY_REF=master --param CONTEXT_DIR=/ --param MAVEN_MIRROR_URL=https://nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/maven-all-public
+oc new-app --template=eap71-basic-s2i --param APPLICATION_NAME=tasks --param SOURCE_REPOSITORY_URL=https://github.com/ipkeisam/advdev_homework_template.git --param SOURCE_REPOSITORY_REF=master --param CONTEXT_DIR=/ --param MAVEN_MIRROR_URL=https://nexus-registry-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/maven-all-public
 
 oc create secret generic gogs-secret --from-literal=username=gogs--from-literal=password=gogs
 
